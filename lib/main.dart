@@ -1,108 +1,103 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  @override
+  const MyApp({Key? key}) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-     title: 'Slide Puzzle',
-      home: SlidePuzzle(),
+
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Slide Puzzle',
+      home: SlidePuzzle(),
     );
   }
 }
-
 class SlidePuzzle extends StatefulWidget {
+  const SlidePuzzle({Key? key}) : super(key: key);
+
   @override
-  _SlidePuzzleState createState() => _SlidePuzzleState();
+  State<SlidePuzzle> createState() => _SlidePuzzleState();
 }
 
 class _SlidePuzzleState extends State<SlidePuzzle> {
-  List<int> numbers = [1, 2, 3, 4, 5, 6, 7, 8, 0];
-  Random random = Random();
-
-  @override
-  void initState() {
-    super.initState();
-    shuffleNumbers();
-  }
-
-  void shuffleNumbers() {
-    for (int i = numbers.length - 1; i > 0; i--) {
-      int j = random.nextInt(i + 1);
-      int temp = numbers[i];
-      numbers[i] = numbers[j];
-      numbers[j] = temp;
-    }
-  }
-
-  bool checkCompletion() {
-    List<int> sortedNumbers = List.from(numbers);
-    sortedNumbers.sort();
-    return numbers.toString() == sortedNumbers.toString();
-  }
-
-  void moveTile(int index) {
-    int emptyIndex = numbers.indexOf(0);
-    if ((index == emptyIndex - 1 && emptyIndex % 3 != 0) ||
-        (index == emptyIndex + 1 && index % 3 != 0) ||
-        index == emptyIndex - 3 ||
-        index == emptyIndex + 3) {
-      setState(() {
-        int temp = numbers[index];
-        numbers[index] = 0;
-        numbers[emptyIndex] = temp;
-      });
-      if (checkCompletion()) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Congratulations!'),
-                content: Text('You have solved the puzzle.'),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        shuffleNumbers();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Play Again'))
-                ],
-              );
-            });
-      }
-    }
-  }
-
+  int valueSlider = 2;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Slide Puzzle'),
+    return  Scaffold(extendBodyBehindAppBar: true,
+    appBar: AppBar(
+      centerTitle: true,
+      title: Text(
+        "slide Puzzle ${valueSlider}x$valueSlider",
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.red,
+          shadows: [
+            Shadow(
+              offset: Offset(2.0, 2.0),
+              blurRadius: 4.0,
+              color: Colors.yellow.withOpacity(0.4),
+            ),
+          ],
+          decoration: TextDecoration.none,
+          decorationColor: Colors.green.withOpacity(0.6),
+          decorationThickness: 2.0,
+        ),
       ),
-      body: GridView.builder(
-        gridDelegate:
-        SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemCount: 9,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              moveTile(index);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(),
-              ),
-              child: Center(
-                child: Text('${numbers[index]}'),
+      actions:[],
+    ),
+    body: Container(
+      height: double.maxFinite,
+      width: double.maxFinite,
+      color: Colors.green[100],
+      child: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                "slide Puzzle ${valueSlider}x$valueSlider",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 4.0,
+                      color: Colors.green.withOpacity(0.4),
+                    ),
+                  ],
+                  decoration: TextDecoration.none,
+                  decorationColor: Colors.white.withOpacity(0.6),
+                  decorationThickness: 2.0,
+                ),
               ),
             ),
-          );
-        },
+            Container(
+              child: Slider(
+                min: 2,
+                  max: 15,
+                  divisions: 13,
+                  label: "${valueSlider.toString()}",
+                  value: valueSlider.toDouble(),
+                  onChanged: (value){
+                    setState(
+                        () {
+                      valueSlider = value.toInt();
+                          },
+                          );
+              }),
+            )
+
+          ],
+        ),
       ),
+    ),
     );
   }
 }
